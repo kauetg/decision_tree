@@ -1,0 +1,324 @@
+/* ============================================
+   decision_tree — style.css
+   ORCA / CRMP integration ready
+   All colors via CSS variables — change once, done.
+   ============================================ */
+
+/* --- VARIABLES --- */
+:root {
+    --color-primary:        #0d6efd;   /* swap for ORCA brand color */
+    --color-primary-hover:  #0b5ed7;
+    --color-secondary:      #6c757d;
+    --color-bg:             #f8f9fa;
+    --color-surface:        #ffffff;
+    --color-border:         #dee2e6;
+    --color-text:           #212529;
+    --color-text-muted:     #6c757d;
+    --color-step:           #adb5bd;
+    --color-add-btn:        #198754;
+    --color-add-btn-hover:  #157347;
+    --color-run-btn:        #0d6efd;
+    --color-run-btn-hover:  #0b5ed7;
+    --color-danger:         #dc3545;
+
+    --font-main:    'Inter', sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+
+    --radius:       0.5rem;
+    --shadow:       0 1px 4px rgba(0,0,0,0.07);
+}
+
+/* --- BASE --- */
+body {
+    font-family: var(--font-main);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+
+/* --- NAVBAR --- */
+.navbar {
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow);
+}
+
+.navbar-brand {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--color-primary);
+}
+
+/* --- PAGE HEADER --- */
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.page-subtitle {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+/* --- CARDS --- */
+.app-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    background-color: var(--color-surface);
+}
+
+.app-card-header {
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+}
+
+.card-step {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-step);
+}
+
+.card-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+/* --- INPUT ROWS --- */
+.input-row-labels small {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.input-row {
+    margin-bottom: 0.5rem;
+}
+
+/* --- BUTTONS --- */
+.btn-add {
+    font-size: 0.85rem;
+    color: var(--color-add-btn);
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.btn-add:hover {
+    color: var(--color-add-btn-hover);
+}
+
+.btn-secondary-app {
+    font-size: 0.85rem;
+    color: var(--color-secondary);
+    background: transparent;
+    border: 1px solid var(--color-border);
+}
+
+.btn-secondary-app:hover {
+    background-color: var(--color-bg);
+}
+
+.btn-run {
+    font-size: 0.9rem;
+    font-weight: 500;
+    background-color: var(--color-run-btn);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+}
+
+.btn-run:hover {
+    background-color: var(--color-run-btn-hover);
+    color: white;
+}
+
+.btn-remove {
+    background: transparent;
+    border: none;
+    color: var(--color-danger);
+    padding: 0;
+    font-size: 0.9rem;
+}
+
+.btn-remove:hover {
+    opacity: 0.7;
+}
+
+/* --- MATRIX --- */
+.matrix-placeholder {
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+.matrix-table {
+    font-size: 0.85rem;
+}
+
+.matrix-table th {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+.matrix-table td:first-child {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.outgroup-row td {
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* --- DICHOTOMOUS KEY --- */
+.key-question {
+    padding: 0.5rem 0;
+}
+
+.key-character {
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+.key-char-name {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--color-text);
+    margin-right: 0.5rem;
+}
+
+.key-char-state {
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.btn-key-yes {
+    background-color: var(--color-add-btn);
+    color: white;
+    border: none;
+    padding: 0.4rem 1.2rem;
+    font-size: 0.9rem;
+}
+
+.btn-key-yes:hover {
+    background-color: var(--color-add-btn-hover);
+    color: white;
+}
+
+.btn-key-no {
+    background-color: var(--color-danger);
+    color: white;
+    border: none;
+    padding: 0.4rem 1.2rem;
+    font-size: 0.9rem;
+}
+
+.btn-key-no:hover {
+    opacity: 0.85;
+    color: white;
+}
+
+.key-result {
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0;
+}
+
+.key-step-counter {
+    font-size: 0.82rem;
+    font-family: var(--font-mono);
+}
+    background-color: rgba(13, 110, 253, 0.08);
+    color: var(--color-primary);
+    font-weight: 400;
+    font-size: 0.75rem;
+    border: 1px solid rgba(13, 110, 253, 0.2);
+}
+
+.key-btn-hint {
+    font-size: 0.72rem;
+    opacity: 0.85;
+    margin-left: 4px;
+}
+
+/* --- FREE SEARCH --- */
+.search-char-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    margin-bottom: 2px;
+}
+
+.search-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.search-result-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    opacity: 0.55;
+    transition: opacity 0.2s;
+}
+
+.search-result-top {
+    opacity: 1;
+}
+
+.search-medal {
+    font-size: 1.1rem;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.search-taxon {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    width: 160px;
+    flex-shrink: 0;
+}
+
+.search-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: var(--color-border);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.search-bar-fill {
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.search-result-top .search-bar-fill {
+    background: var(--color-add-btn);
+}
+
+.search-pct {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    width: 36px;
+    text-align: right;
+    flex-shrink: 0;
+}

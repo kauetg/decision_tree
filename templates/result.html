@@ -1,0 +1,395 @@
+{% extends "base.html" %}
+
+{% block title %}Decision Tree — Result{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+
+        <div class="page-header mb-4 d-flex align-items-center justify-content-between">
+            <div>
+                <h1 class="page-title">Analysis Result</h1>
+                <p class="page-subtitle">Identify, explore and search your matrix.</p>
+            </div>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary-app">
+                <i class="bi bi-arrow-left"></i> New analysis
+            </a>
+        </div>
+
+        <!-- WARNING -->
+        <div class="alert alert-warning d-flex gap-3 mb-3" role="alert">
+            <div class="fs-4">⚠️</div>
+            <div>
+                <strong>Heads up!</strong> This tree groups organisms by how similar they look in the field —
+                not by evolutionary history. Groups here may not reflect real biological relationships.<br>
+                <span class="text-muted small">
+                    A snake and an earthworm could end up as sisters! 🐍🪱
+                    A mosquito and a bird might cluster together! 🦟🐦<br>
+                    Use this as a <strong>field ID tool</strong>, not a phylogeny.
+                </span>
+            </div>
+        </div>
+
+        <!-- CARD 01 — DICHOTOMOUS KEY -->
+        <div class="card app-card mb-3">
+            <div class="card-header app-card-header">
+                <span class="card-step">01</span>
+                <span class="card-title">Dichotomous Key</span>
+                <span class="key-step-counter text-muted ms-auto" id="step-counter" style="display:none;">
+                    Step <strong id="step-current">1</strong> of <strong id="step-total">?</strong>
+                </span>
+                <small class="text-muted ms-3">Click <strong>YES</strong> or <strong>NO</strong> to navigate</small>
+            </div>
+            <div class="card-body">
+                <div id="key-container">
+                    <p class="text-muted matrix-placeholder">
+                        <i class="bi bi-hourglass"></i> Loading key...
+                    </p>
+                </div>
+                <div class="mt-3" id="key-restart" style="display:none;">
+                    <button class="btn btn-secondary-app" onclick="restartKey()">
+                        <i class="bi bi-arrow-counterclockwise"></i> Restart key
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 02 — PHENOGRAM -->
+        <div class="card app-card mb-3">
+            <div class="card-header app-card-header">
+                <span class="card-step">02</span>
+                <span class="card-title">Phenogram</span>
+                <button class="btn btn-secondary-app ms-auto" onclick="exportPhenogram()">
+                    <i class="bi bi-download"></i> Export image
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="phenogram-container" style="height: 450px;">
+                    <p class="text-muted matrix-placeholder">
+                        <i class="bi bi-hourglass"></i> Loading phenogram...
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 03 — FREE SEARCH -->
+        <div class="card app-card mb-4">
+            <div class="card-header app-card-header">
+                <span class="card-step">03</span>
+                <span class="card-title">Free Search</span>
+                <small class="text-muted ms-auto">Describe what you see — get the closest matches</small>
+            </div>
+            <div class="card-body">
+                <div id="search-form-container">
+                    <p class="text-muted matrix-placeholder">
+                        <i class="bi bi-hourglass"></i> Loading...
+                    </p>
+                </div>
+                <div id="search-results" class="mt-3" style="display:none;"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// -------------------------------------------------------
+// BOOT
+// -------------------------------------------------------
+let keyRoot     = null;
+let resultData  = null;
+let echartsInst = null;
+let stepCurrent = 0;
+let stepTotal   = 0;
+
+const raw = sessionStorage.getItem('dt_result');
+
+if (!raw) {
+    document.getElementById('phenogram-container').innerHTML =
+        '<p class="text-muted matrix-placeholder">No result found. <a href="/">Run an analysis first.</a></p>';
+} else {
+    resultData = JSON.parse(raw);
+    if (resultData.status === 'ok') {
+        startKey(resultData.key);
+        renderPhenogram(resultData.phenogram, resultData.taxa);
+        buildSearchForm(resultData);
+    } else {
+        document.getElementById('phenogram-container').innerHTML =
+            `<p class="text-danger matrix-placeholder">Error: ${resultData.message}</p>`;
+    }
+}
+
+// -------------------------------------------------------
+// HELPERS
+// -------------------------------------------------------
+function prettify(str) {
+    return str.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function collectTaxa(node) {
+    if (!node) return [];
+    if (node.type === 'result')  return [node.taxon];
+    if (node.type === 'warning') return node.taxa || [];
+    return [...collectTaxa(node.yes), ...collectTaxa(node.no)];
+}
+
+// -------------------------------------------------------
+// PHENOGRAM — ECharts
+// -------------------------------------------------------
+function renderPhenogram(treeData, allTaxa) {
+    const container = document.getElementById('phenogram-container');
+    container.innerHTML = '';
+    echartsInst = echarts.init(container);
+    echartsInst.setOption(buildPhenogramOption(treeData, allTaxa));
+    window.addEventListener('resize', () => echartsInst.resize());
+}
+
+function exportPhenogram() {
+    if (!echartsInst) return;
+    const url = echartsInst.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#ffffff' });
+    const a   = document.createElement('a');
+    a.href    = url;
+    a.download = 'phenogram.png';
+    a.click();
+}
+
+function buildPhenogramOption(treeData, activeTaxa) {
+    return {
+        backgroundColor: 'transparent',
+        tooltip: {
+            trigger: 'item',
+            formatter: (p) => {
+                if (!p.data.name) return '';
+                const chars = p.data.characters || {};
+                const rows  = Object.entries(chars)
+                    .map(([k, v]) => `<tr><td style="padding-right:8px;color:#aaa">${prettify(k)}</td><td>${prettify(v)}</td></tr>`)
+                    .join('');
+                return `<strong>${p.data.name}</strong>${rows ? '<table style="margin-top:4px">'+rows+'</table>' : ''}`;
+            }
+        },
+        series: [{
+            type: 'tree',
+            data: [markDimmed(treeData, activeTaxa)],
+            layout: 'orthogonal',
+            orient: 'LR',
+            symbol: 'emptyCircle',
+            symbolSize: 7,
+            roam: true,
+            initialTreeDepth: -1,
+            label: {
+                position: 'right',
+                fontSize: 13,
+                fontFamily: 'JetBrains Mono, monospace',
+            },
+            leaves: {
+                label: {
+                    position: 'right',
+                    verticalAlign: 'middle',
+                    align: 'left',
+                    fontSize: 13,
+                    fontFamily: 'JetBrains Mono, monospace',
+                }
+            },
+            lineStyle: { width: 1.5, curveness: 0 },
+            expandAndCollapse: false,
+            animationDuration: 400,
+        }]
+    };
+}
+
+function markDimmed(node, activeTaxa) {
+    const isLeaf   = node.children && node.children.length === 0;
+    const isActive = !isLeaf || activeTaxa.includes(node.name);
+    const opacity  = isActive ? 1 : 0.12;
+    return {
+        ...node,
+        itemStyle: { opacity },
+        lineStyle: { opacity },
+        label:     { ...node.label, opacity },
+        children:  (node.children || []).map(c => markDimmed(c, activeTaxa))
+    };
+}
+
+function updatePhenogram(activeTaxa) {
+    if (!echartsInst || !resultData) return;
+    echartsInst.setOption(buildPhenogramOption(resultData.phenogram, activeTaxa));
+}
+
+// -------------------------------------------------------
+// DICHOTOMOUS KEY
+// -------------------------------------------------------
+function countSteps(node) {
+    if (!node || node.type !== 'question') return 0;
+    return 1 + Math.max(countSteps(node.yes), countSteps(node.no));
+}
+
+function updateStepCounter(step) {
+    const counter = document.getElementById('step-counter');
+    if (step === 0) { counter.style.display = 'none'; return; }
+    counter.style.display = 'inline';
+    document.getElementById('step-current').textContent = step;
+    document.getElementById('step-total').textContent   = stepTotal;
+}
+
+function startKey(keyData) {
+    keyRoot     = keyData;
+    stepTotal   = countSteps(keyData);
+    stepCurrent = 0;
+    renderKeyNode(keyData);
+}
+
+function restartKey() {
+    document.getElementById('key-restart').style.display = 'none';
+    stepCurrent = 0;
+    updateStepCounter(0);
+    updatePhenogram(resultData.taxa);
+    renderKeyNode(keyRoot);
+}
+
+function renderKeyNode(node) {
+    const container = document.getElementById('key-container');
+    const restart   = document.getElementById('key-restart');
+
+    // --- RESULT ---
+    if (node.type === 'result') {
+        updatePhenogram([node.taxon]);
+        container.innerHTML = `
+            <div class="key-result">
+                <i class="bi bi-check-circle-fill text-success"></i>
+                <strong>${node.taxon}</strong>
+            </div>`;
+        restart.style.display = 'block';
+        return;
+    }
+
+    // --- WARNING ---
+    if (node.type === 'warning') {
+        container.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle"></i>
+                ${node.message}
+            </div>`;
+        restart.style.display = 'block';
+        return;
+    }
+
+    // --- QUESTION ---
+    const yesTaxa = collectTaxa(node.yes);
+    const noTaxa  = collectTaxa(node.no);
+    const allTaxa = [...yesTaxa, ...noTaxa];
+
+    stepCurrent++;
+    updateStepCounter(stepCurrent);
+    updatePhenogram(allTaxa);
+
+    container.innerHTML = `
+        <div class="key-question">
+            <p class="key-character">
+                <span class="key-char-name">${prettify(node.character)}:</span>
+                <span class="key-char-state">${prettify(node.state)}?</span>
+            </p>
+            <div class="key-still-playing mt-2 mb-3">
+                <small class="text-muted">Still in play: </small>
+                ${allTaxa.map(t => `<span class="badge key-taxon-badge">${t}</span>`).join(' ')}
+            </div>
+            <div class="d-flex gap-2 mt-2">
+                <button class="btn btn-key-yes" onclick="answerKey('yes')">
+                    <i class="bi bi-check-lg"></i> Yes
+                    <small class="key-btn-hint">(${yesTaxa.join(', ')})</small>
+                </button>
+                <button class="btn btn-key-no" onclick="answerKey('no')">
+                    <i class="bi bi-x-lg"></i> No
+                    <small class="key-btn-hint">(${noTaxa.join(', ')})</small>
+                </button>
+            </div>
+        </div>`;
+
+    container.dataset.nodeJson = JSON.stringify(node);
+}
+
+function answerKey(answer) {
+    const container = document.getElementById('key-container');
+    const node = JSON.parse(container.dataset.nodeJson);
+    renderKeyNode(answer === 'yes' ? node.yes : node.no);
+}
+
+// -------------------------------------------------------
+// FREE SEARCH
+// -------------------------------------------------------
+function buildSearchForm(data) {
+    const container  = document.getElementById('search-form-container');
+    const characters = data.characters;
+
+    let html = '<div class="row g-2 mb-3">';
+    characters.forEach(c => {
+        html += `
+            <div class="col-md-4 col-sm-6">
+                <label class="form-label search-char-label">${prettify(c.name)}</label>
+                <select class="form-select form-select-sm search-dropdown" data-char="${c.name}">
+                    <option value="">— any —</option>
+                    ${c.states.map(s => `<option value="${s}">${prettify(s)}</option>`).join('')}
+                </select>
+            </div>`;
+    });
+    html += `</div>
+        <button class="btn btn-run" onclick="runSearch()">
+            <i class="bi bi-search"></i> Find match
+        </button>`;
+
+    container.innerHTML = html;
+}
+
+function runSearch() {
+    const dropdowns = document.querySelectorAll('.search-dropdown');
+    const query     = {};
+    dropdowns.forEach(d => { if (d.value) query[d.dataset.char] = d.value; });
+
+    if (Object.keys(query).length === 0) {
+        alert('Select at least one character to search.'); return;
+    }
+
+    const matrix = resultData.matrix;
+    const taxa   = resultData.taxa_full.filter(t => !t.outgroup).map(t => t.name);
+    const chars  = Object.keys(query);
+
+    const scores = taxa.map(taxon => {
+        const states  = matrix[taxon] || {};
+        const matches = chars.filter(c => states[c] === query[c]).length;
+        return { taxon, score: matches / chars.length };
+    }).sort((a, b) => b.score - a.score);
+
+    const maxScore   = scores[0].score;
+    const topMatches = scores.filter(s => s.score === maxScore).map(s => s.taxon);
+    updatePhenogram(topMatches);
+
+    const resultsDiv = document.getElementById('search-results');
+    resultsDiv.style.display = 'block';
+
+    let html = '<div class="search-results-list">';
+    scores.forEach((s, i) => {
+        const pct    = Math.round(s.score * 100);
+        const medal  = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+        const active = s.score === maxScore ? 'search-result-top' : '';
+        html += `
+            <div class="search-result-row ${active}">
+                <span class="search-medal">${medal}</span>
+                <span class="search-taxon">${s.taxon}</span>
+                <div class="search-bar-wrap">
+                    <div class="search-bar-fill" style="width:${pct}%"></div>
+                </div>
+                <span class="search-pct">${pct}%</span>
+            </div>`;
+    });
+    html += '</div>';
+    resultsDiv.innerHTML = html;
+}
+</script>
+{% endblock %}

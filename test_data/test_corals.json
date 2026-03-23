@@ -1,0 +1,31 @@
+{
+  "characters": [
+    {"name": "colony_form",       "states": ["branching", "massive", "encrusting", "plating", "solitary", "foliose"]},
+    {"name": "corallite_size",    "states": ["small", "medium", "large"]},
+    {"name": "branching_pattern", "states": ["axial", "radial", "none"]},
+    {"name": "color",             "states": ["brown", "green", "yellow", "purple", "pink", "cream"]},
+    {"name": "texture",           "states": ["smooth", "rough", "ridged", "porous"]}
+  ],
+  "taxa": [
+    {"name": "Acropora",      "outgroup": false},
+    {"name": "Porites",       "outgroup": false},
+    {"name": "Pocillopora",   "outgroup": false},
+    {"name": "Montipora",     "outgroup": false},
+    {"name": "Galaxea",       "outgroup": false},
+    {"name": "Fungia",        "outgroup": false},
+    {"name": "Lobophyllia",   "outgroup": false},
+    {"name": "Stylophora",    "outgroup": false},
+    {"name": "Sea anemone",   "outgroup": true}
+  ],
+  "matrix": {
+    "Acropora":    {"colony_form": "branching",  "corallite_size": "small",  "branching_pattern": "axial",  "color": "brown",  "texture": "rough"},
+    "Porites":     {"colony_form": "massive",    "corallite_size": "small",  "branching_pattern": "none",   "color": "brown",  "texture": "porous"},
+    "Pocillopora": {"colony_form": "branching",  "corallite_size": "small",  "branching_pattern": "radial", "color": "pink",   "texture": "rough"},
+    "Montipora":   {"colony_form": "encrusting", "corallite_size": "small",  "branching_pattern": "none",   "color": "brown",  "texture": "smooth"},
+    "Galaxea":     {"colony_form": "massive",    "corallite_size": "large",  "branching_pattern": "none",   "color": "green",  "texture": "rough"},
+    "Fungia":      {"colony_form": "solitary",   "corallite_size": "large",  "branching_pattern": "none",   "color": "brown",  "texture": "ridged"},
+    "Lobophyllia": {"colony_form": "massive",    "corallite_size": "large",  "branching_pattern": "none",   "color": "brown",  "texture": "ridged"},
+    "Stylophora":  {"colony_form": "branching",  "corallite_size": "medium", "branching_pattern": "radial", "color": "cream",  "texture": "smooth"},
+    "Sea anemone": {"colony_form": "solitary",   "corallite_size": "large",  "branching_pattern": "none",   "color": "brown",  "texture": "smooth"}
+  }
+}

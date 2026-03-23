@@ -1,0 +1,29 @@
+{
+  "characters": [
+    {"name": "leavening_agent", "states": ["yeast", "sourdough_starter", "baking_powder", "none"]},
+    {"name": "fermentation",    "states": ["yes", "no"]},
+    {"name": "shape",           "states": ["loaf", "flat", "roll", "ring", "croissant"]},
+    {"name": "crust",           "states": ["thick", "thin", "none"]},
+    {"name": "fat_content",     "states": ["high", "low", "none"]}
+  ],
+  "taxa": [
+    {"name": "Sourdough",  "outgroup": false},
+    {"name": "Baguette",   "outgroup": false},
+    {"name": "Pita",       "outgroup": false},
+    {"name": "Naan",       "outgroup": false},
+    {"name": "Croissant",  "outgroup": false},
+    {"name": "Pretzel",    "outgroup": false},
+    {"name": "Ciabatta",   "outgroup": false},
+    {"name": "Raw flour",  "outgroup": true}
+  ],
+  "matrix": {
+    "Sourdough": {"leavening_agent": "sourdough_starter", "fermentation": "yes", "shape": "loaf",      "crust": "thick", "fat_content": "low"},
+    "Baguette":  {"leavening_agent": "yeast",             "fermentation": "yes", "shape": "loaf",      "crust": "thick", "fat_content": "low"},
+    "Pita":      {"leavening_agent": "yeast",             "fermentation": "yes", "shape": "flat",      "crust": "thin",  "fat_content": "low"},
+    "Naan":      {"leavening_agent": "yeast",             "fermentation": "yes", "shape": "flat",      "crust": "thin",  "fat_content": "high"},
+    "Croissant": {"leavening_agent": "yeast",             "fermentation": "yes", "shape": "croissant", "crust": "thin",  "fat_content": "high"},
+    "Pretzel":   {"leavening_agent": "yeast",             "fermentation": "yes", "shape": "ring",      "crust": "thick", "fat_content": "low"},
+    "Ciabatta":  {"leavening_agent": "yeast",             "fermentation": "yes", "shape": "loaf",      "crust": "thin",  "fat_content": "low"},
+    "Raw flour": {"leavening_agent": "none",              "fermentation": "no",  "shape": "flat",      "crust": "none",  "fat_content": "none"}
+  }
+}
