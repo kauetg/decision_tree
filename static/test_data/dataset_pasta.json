@@ -1,0 +1,138 @@
+{
+  "characters": [
+    {
+      "name": "shape",
+      "states": [
+        "flat",
+        "tubular",
+        "rolled",
+        "long_thin",
+        "short_curved"
+      ]
+    },
+    {
+      "name": "filling",
+      "states": [
+        "yes",
+        "no"
+      ]
+    },
+    {
+      "name": "layers",
+      "states": [
+        "single",
+        "multiple"
+      ]
+    },
+    {
+      "name": "fermentation",
+      "states": [
+        "yes",
+        "no"
+      ]
+    },
+    {
+      "name": "sauce_retention",
+      "states": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    {
+      "name": "is_pasta",
+      "states": [
+        "yes",
+        "no"
+      ]
+    }
+  ],
+  "taxa": [
+    {
+      "name": "Lasagna",
+      "outgroup": false
+    },
+    {
+      "name": "Cannelloni",
+      "outgroup": false
+    },
+    {
+      "name": "Tagliatelle",
+      "outgroup": false
+    },
+    {
+      "name": "Ravioli",
+      "outgroup": false
+    },
+    {
+      "name": "Spaghetti",
+      "outgroup": false
+    },
+    {
+      "name": "Penne",
+      "outgroup": false
+    },
+    {
+      "name": "Raw dough",
+      "outgroup": true
+    }
+  ],
+  "matrix": {
+    "Lasagna": {
+      "shape": "flat",
+      "filling": "yes",
+      "layers": "multiple",
+      "fermentation": "no",
+      "sauce_retention": "high",
+      "is_pasta": "yes"
+    },
+    "Cannelloni": {
+      "shape": "tubular",
+      "filling": "yes",
+      "layers": "single",
+      "fermentation": "no",
+      "sauce_retention": "high",
+      "is_pasta": "yes"
+    },
+    "Tagliatelle": {
+      "shape": "flat",
+      "filling": "no",
+      "layers": "single",
+      "fermentation": "no",
+      "sauce_retention": "medium",
+      "is_pasta": "yes"
+    },
+    "Ravioli": {
+      "shape": "rolled",
+      "filling": "yes",
+      "layers": "single",
+      "fermentation": "no",
+      "sauce_retention": "medium",
+      "is_pasta": "yes"
+    },
+    "Spaghetti": {
+      "shape": "long_thin",
+      "filling": "no",
+      "layers": "single",
+      "fermentation": "no",
+      "sauce_retention": "low",
+      "is_pasta": "yes"
+    },
+    "Penne": {
+      "shape": "short_curved",
+      "filling": "no",
+      "layers": "single",
+      "fermentation": "no",
+      "sauce_retention": "high",
+      "is_pasta": "yes"
+    },
+    "Raw dough": {
+      "shape": "flat",
+      "filling": "no",
+      "layers": "single",
+      "fermentation": "no",
+      "sauce_retention": "low",
+      "is_pasta": "no"
+    }
+  }
+}

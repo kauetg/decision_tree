@@ -39,7 +39,7 @@ Use this as a **field ID tool**, not a phylogeny. Your ecology professor will th
 ## Getting started
 
 ```bash
-git clone https://github.com/yourusername/decision_tree
+git clone https://github.com/kauetg/decision_tree
 cd decision_tree
 pip install -r requirements.txt
 python app.py

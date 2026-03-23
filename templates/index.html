@@ -89,6 +89,20 @@
                         <i class="bi bi-upload"></i> Load JSON
                     </button>
                     <input type="file" id="load-file-input" accept=".json" class="d-none">
+
+                    <!-- Examples dropdown -->
+                    <div class="dropdown">
+                        <button class="btn btn-secondary-app dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-collection"></i> Examples
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><h6 class="dropdown-header">Load example dataset</h6></li>
+                            <li><a class="dropdown-item" href="#" onclick="loadExample('dataset_indopacific_corals.json')">🪸 Indo-Pacific Hard Corals</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="loadExample('dataset_breads.json')">🍞 World Breads</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="loadExample('dataset_pasta.json')">🍝 Italian Pasta</a></li>
+                        </ul>
+                    </div>
+
                     <button type="button" class="btn btn-run ms-auto" id="btn-run">
                         <i class="bi bi-diagram-3"></i> Run Analysis
                     </button>

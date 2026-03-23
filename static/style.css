@@ -322,3 +322,10 @@ body {
     text-align: right;
     flex-shrink: 0;
 }
+.key-taxon-badge {
+    background-color: rgba(13, 110, 253, 0.08);
+    color: var(--color-primary);
+    font-weight: 400;
+    font-size: 0.75rem;
+    border: 1px solid rgba(13, 110, 253, 0.2);
+}

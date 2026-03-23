@@ -203,7 +203,16 @@ function saveJSON() {
     URL.revokeObjectURL(url);
 }
 
-// --- LOAD JSON ---
+// --- LOAD EXAMPLE ---
+function loadExample(filename) {
+    fetch(`/static/test_data/${filename}`)
+        .then(res => res.json())
+        .then(data => restoreFromJSON(data))
+        .catch(err => {
+            console.error(err);
+            alert('Could not load example dataset.');
+        });
+}
 function loadJSON(event) {
     const file = event.target.files[0];
     if (!file) return;
